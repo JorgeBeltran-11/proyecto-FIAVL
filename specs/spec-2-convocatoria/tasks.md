@@ -13,10 +13,10 @@ Leyenda: `[x]` hecha · `[ ]` pendiente · entre paréntesis el requisito que cu
 - [ ] T006 Crear tabla y datos de ejemplo en `db.js` (NFR-001, FR-011)
 - [ ] T007 `POST /postulaciones` con validaciones y código único (FR-001, FR-002)
 - [ ] T008 Regla: impedir duplicados pendientes → 409 (FR-003)
-- [ ] T009 `GET /postulaciones/:codigo` (FR-004)
+- [ ] T009 `GET /postulaciones/codigo/:codigo` y `GET /postulaciones/:id` (FR-004)
 - [ ] T010 `GET /postulaciones` con filtros y `GET /postulaciones/resumen` (FR-005, FR-010)
-- [ ] T011 Cliente de programación y `POST /:codigo/aprobar` con 502/503 (FR-006, FR-007, NFR-003)
-- [ ] T012 `POST /:codigo/rechazar` con motivo obligatorio (FR-008)
+- [ ] T011 Cliente de programación y `POST /:id/aprobar` con 502/503 (FR-006, FR-007, NFR-003)
+- [ ] T012 `POST /:id/rechazar` con motivo obligatorio (FR-008)
 - [ ] T013 Cliente de notificaciones que no bloquea la decisión (FR-009)
 
 ## Fase 3 — Integración

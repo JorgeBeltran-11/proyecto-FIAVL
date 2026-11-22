@@ -6,8 +6,8 @@ Se respeta el stack común de la constitución (Principio III). Decisiones propi
 
 | Decisión | Elección | Motivo |
 |---|---|---|
-| Identificador público | Código `CONV-XXXXXX` (6 caracteres alfanuméricos) | La compañía consulta sin login; el código no revela cuántas postulaciones existen (a diferencia de un id incremental) |
-| Cambio de estado | Acciones explícitas `POST /:codigo/aprobar` y `POST /:codigo/rechazar` | Cada acción tiene reglas propias; evita que se pueda poner cualquier estado con un `PATCH` |
+| Identificadores | `id` numérico para administración y otros servicios; código `CONV-XXXXXX` solo para que la compañía consulte | Se respeta la ruta `/postulaciones/:id/aprobar` de la vista de procesos (docs/arquitectura, 4.3); el código público no revela cuántas postulaciones existen |
+| Cambio de estado | Acciones explícitas `POST /:id/aprobar` y `POST /:id/rechazar` | Cada acción tiene reglas propias; evita que se pueda poner cualquier estado con un `PATCH` |
 | Aprobación | Primero se crea la obra en programación y **solo si responde 201** se marca "aprobada" | Evita postulaciones aprobadas sin obra (FR-007) |
 | Notificación | Llamada a spec-4 **después** de guardar la decisión, con tiempo límite de 2 s y sin propagar el error | Un fallo del aviso no deshace la decisión (FR-009) |
 | Comunicación | REST síncrono con `fetch` nativo de Node 20 | No agrega dependencias |
@@ -65,8 +65,8 @@ sequenceDiagram
     participant P as programacion-service
     participant N as notificaciones-service
 
-    A->>G: POST /api/convocatoria/postulaciones/CONV-AB12CD/aprobar
-    G->>C: POST /postulaciones/CONV-AB12CD/aprobar
+    A->>G: POST /api/convocatoria/postulaciones/5/aprobar
+    G->>C: POST /postulaciones/5/aprobar
     C->>C: ¿Existe y está pendiente? (si no: 404 / 409)
     C->>P: POST /obras {titulo, compania, ...}
     alt programación responde 201
