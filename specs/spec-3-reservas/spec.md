@@ -1,7 +1,7 @@
 # Spec-3: Entradas y reservas
 
 - **Rama:** `spec-3`
-- **Responsable:** _(por asignar)_
+- **Responsable:** Julio Cesar
 - **Estado:** Borrador
 - **Microservicio:** `reservas-service`
 
