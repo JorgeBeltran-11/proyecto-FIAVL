@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: notificaciones-service API
+  version: 1.0.0
+  description: |
+    API de bandeja de notificaciones y reportes administrativos de FIAVL.
+    El frontend accede por el Gateway bajo /api/notificaciones.
+servers:
+  - url: http://localhost:3004
+    description: Acceso directo entre servicios y entorno local
+  - url: http://localhost:3000/api/notificaciones
+    description: Acceso del frontend a través del API Gateway
+tags:
+  - name: Salud
+  - name: Notificaciones
+  - name: Reportes
+paths:
+  /health:
+    get:
+      tags: [Salud]
+      summary: Comprueba la salud del servicio
+      operationId: obtenerSalud
+      responses:
+        "200":
+          description: Servicio disponible
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [servicio, estado]
+                properties:
+                  servicio:
+                    type: string
+                    example: notificaciones-service
+                  estado:
+                    type: string
+                    example: ok
+  /notificaciones:
+    post:
+      tags: [Notificaciones]
+      summary: Registra una notificación
+      operationId: registrarNotificacion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NuevaNotificacion"
+            example:
+              correo: maria@correo.com
+              tipo: RESERVA_CONFIRMADA
+              referencia: RES-4F7KQ2
+              mensaje: "Reserva confirmada: 2 entradas para El último viaje."
+      responses:
+        "201":
+          description: Notificación almacenada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notificacion"
+        "400":
+          $ref: "#/components/responses/ErrorSolicitud"
+        "500":
+          $ref: "#/components/responses/ErrorServidor"
+    get:
+      tags: [Notificaciones]
+      summary: Consulta la bandeja asociada a un correo
+      operationId: consultarNotificaciones
+      parameters:
+        - name: correo
+          in: query
+          required: true
+          description: |
+            Correo del destinatario. Se eliminan los espacios en blanco
+            externos antes de validar y consultar.
+          schema:
+            type: string
+            format: email
+            maxLength: 254
+            description: |
+              El valor recibido admite hasta 254 caracteres. La parte local
+              tiene hasta 64 caracteres ASCII, usa caracteres alfanuméricos
+              o ``!#$%&'*+/=?^_`{|}~-`` y permite puntos solo entre segmentos
+              no vacíos. El dominio requiere al menos dos etiquetas de 1 a 63
+              caracteres; cada etiqueta admite letras ASCII, números y
+              guiones internos, y empieza y termina con letra o número.
+      responses:
+        "200":
+          description: Bandeja ordenada por fecha de creación descendente
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BandejaNotificaciones"
+        "400":
+          $ref: "#/components/responses/ErrorSolicitud"
+        "500":
+          $ref: "#/components/responses/ErrorServidor"
+  /reportes/ocupacion:
+    get:
+      tags: [Reportes]
+      summary: Obtiene la ocupación por función
+      operationId: obtenerReporteOcupacion
+      responses:
+        "200":
+          description: Ocupación de funciones cuando todos los datos externos son válidos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OcupacionFuncion"
+        "503":
+          $ref: "#/components/responses/DependenciaNoDisponible"
+        "500":
+          $ref: "#/components/responses/ErrorServidor"
+  /reportes/funciones-mas-reservadas:
+    get:
+      tags: [Reportes]
+      summary: Ordena funciones por entradas confirmadas
+      operationId: obtenerFuncionesMasReservadas
+      responses:
+        "200":
+          description: Métricas de reservas ordenadas por entradas descendentes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResumenReservasFuncion"
+        "503":
+          $ref: "#/components/responses/DependenciaNoDisponible"
+        "500":
+          $ref: "#/components/responses/ErrorServidor"
+  /reportes/postulaciones-por-estado:
+    get:
+      tags: [Reportes]
+      summary: Obtiene conteos de postulaciones por estado
+      operationId: obtenerPostulacionesPorEstado
+      responses:
+        "200":
+          description: Conteos según el resumen publicado por convocatoria-service
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResumenPostulaciones"
+        "503":
+          $ref: "#/components/responses/DependenciaNoDisponible"
+        "500":
+          $ref: "#/components/responses/ErrorServidor"
+components:
+  schemas:
+    NuevaNotificacion:
+      type: object
+      additionalProperties: false
+      required: [correo, tipo, referencia, mensaje]
+      properties:
+        correo:
+          type: string
+          format: email
+          maxLength: 254
+          description: |
+            Se eliminan los espacios en blanco externos antes de validar.
+            El valor recibido admite hasta 254 caracteres. La parte local
+            tiene hasta 64 caracteres ASCII, usa caracteres alfanuméricos
+            o ``!#$%&'*+/=?^_`{|}~-`` y permite puntos solo entre segmentos
+            no vacíos. El dominio requiere al menos dos etiquetas de 1 a 63
+            caracteres; cada etiqueta admite letras ASCII, números y
+            guiones internos, y empieza y termina con letra o número.
+        tipo:
+          type: string
+          enum:
+            - RESERVA_CONFIRMADA
+            - POSTULACION_APROBADA
+            - POSTULACION
+            - reserva
+            - postulacion
+          description: |
+            `reserva` es el alias provisional de SPEC-3 y se normaliza a
+            RESERVA_CONFIRMADA. `postulacion` es genérico (aprobación o rechazo)
+            en el contrato provisional de SPEC-2 y no se interpreta como una
+            aprobación.
+        referencia:
+          type: string
+          minLength: 1
+          maxLength: 100
+        mensaje:
+          type: string
+          minLength: 1
+          maxLength: 2000
+    Notificacion:
+      type: object
+      required: [id, correo, tipo, referencia, mensaje, fecha_creacion]
+      properties:
+        id:
+          type: integer
+          minimum: 1
+        correo:
+          type: string
+          format: email
+          description: |
+            Correo devuelto normalizado, sin espacios en blanco externos: el
+            dominio está en minúsculas y se conserva la capitalización de la
+            parte local.
+        tipo:
+          type: string
+          description: Tipo canónico o genérico persistido
+        referencia:
+          type: string
+        mensaje:
+          type: string
+        fecha_creacion:
+          type: string
+          format: date-time
+    BandejaNotificaciones:
+      type: object
+      required: [correo, total, notificaciones]
+      properties:
+        correo:
+          type: string
+          format: email
+          description: |
+            Correo devuelto normalizado, sin espacios en blanco externos: el
+            dominio está en minúsculas y se conserva la capitalización de la
+            parte local.
+        total:
+          type: integer
+          minimum: 0
+        notificaciones:
+          type: array
+          items:
+            $ref: "#/components/schemas/Notificacion"
+    OcupacionFuncion:
+      type: object
+      required:
+        - funcion_id
+        - fecha
+        - hora
+        - obra
+        - escenario
+        - aforo
+        - entradas_reservadas
+        - ocupacion_porcentaje
+      properties:
+        funcion_id:
+          type: integer
+          minimum: 1
+        fecha:
+          type: string
+          format: date
+        hora:
+          type: string
+          example: "19:00"
+        obra:
+          type: string
+          description: Título obtenido de la función en programacion-service
+        escenario:
+          type: string
+          description: Nombre obtenido de la función en programacion-service
+        aforo:
+          type: integer
+          minimum: 1
+        entradas_reservadas:
+          type: integer
+          minimum: 0
+        ocupacion_porcentaje:
+          type: number
+          minimum: 0
+          description: Entradas reservadas dividido para aforo y multiplicado por 100
+    ResumenReservasFuncion:
+      type: object
+      required: [funcion_id, entradas, reservas]
+      properties:
+        funcion_id:
+          type: integer
+          minimum: 1
+        entradas:
+          type: integer
+          minimum: 0
+          description: Entradas confirmadas; métrica principal de ordenamiento
+        reservas:
+          type: integer
+          minimum: 0
+          description: Número de reservas confirmadas, no cantidad de entradas
+    ResumenPostulaciones:
+      type: object
+      required: [pendiente, aprobada, rechazada, total]
+      properties:
+        pendiente:
+          type: integer
+          minimum: 0
+        aprobada:
+          type: integer
+          minimum: 0
+        rechazada:
+          type: integer
+          minimum: 0
+        total:
+          type: integer
+          minimum: 0
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+  responses:
+    ErrorSolicitud:
+      description: Solicitud inválida
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: El correo electrónico no es válido
+    ErrorServidor:
+      description: Error local inesperado o de persistencia
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    DependenciaNoDisponible:
+      description: Servicio requerido no disponible, respuesta externa inválida o datos remotos inconsistentes
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: Servicio de convocatoria no disponible
