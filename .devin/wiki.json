@@ -1,0 +1,59 @@
+{
+  "repo_notes": [
+    {
+      "content": "Escribe TODO el wiki en español. Este repositorio es un trabajo universitario de Arquitectura de Software (UTPL): una plataforma web para el Festival Internacional de Artes Vivas Loja (FIAVL). Se desarrolló con Specification-Driven Development (SDD): cada funcionalidad tiene su carpeta en specs/ con spec.md, plan.md, tasks.md y contracts/. El estilo arquitectónico es MICROSERVICIOS con API Gateway (no es un monolito). El objetivo del wiki es documentar la arquitectura usando el MODELO 4+1 de Kruchten (vista lógica, de desarrollo, de procesos, física y escenarios). Usa diagramas Mermaid en cada vista.",
+      "author": "Equipo FIAVL"
+    },
+    {
+      "content": "Componentes y puertos: frontend React + Vite (5173) que llama solo al API Gateway; services/api-gateway (3000) enruta /api/programacion, /api/convocatoria, /api/reservas y /api/notificaciones; services/programacion-service (3001, spec-1: escenarios, obras, funciones y cartelera); convocatoria-service (3002, spec-2: postulación y aprobación de obras); services/reservas-service (3003, spec-3: reservas de entradas con control de aforo); services/notificaciones-service (3004, spec-4: notificaciones y reportes). Cada servicio usa Node.js + Express y su propia base SQLite; se comunican solo por HTTP/JSON. Las reglas del proyecto están en .specify/memory/constitution.md y las decisiones arquitectónicas en docs/arquitectura/decisiones.md.",
+      "author": "Equipo FIAVL"
+    }
+  ],
+  "pages": [
+    {
+      "title": "Visión general del sistema FIAVL",
+      "purpose": "Explicar el caso del Festival de Artes Vivas Loja, el objetivo de la plataforma, el estilo de microservicios elegido, la metodología SDD y el reparto en 4 specs por integrante. Incluir un diagrama Mermaid de contexto con el frontend, el API Gateway y los 4 microservicios."
+    },
+    {
+      "title": "Modelo 4+1",
+      "purpose": "Página índice que explique qué es el modelo 4+1 de Kruchten y enlace a cada una de las cinco vistas del sistema FIAVL."
+    },
+    {
+      "title": "Vista de escenarios (+1)",
+      "parent": "Modelo 4+1",
+      "purpose": "Describir los casos de uso de los actores Público, Compañía artística y Administrador (consultar cartelera, postular obra, aprobar postulación, reservar entradas, ver notificaciones y reportes), indicando qué spec implementa cada uno. Incluir un diagrama Mermaid de casos de uso y el escenario 'Reservar una entrada' que recorre todos los servicios."
+    },
+    {
+      "title": "Vista lógica",
+      "parent": "Modelo 4+1",
+      "purpose": "Describir las entidades del dominio de cada microservicio como contextos delimitados (Escenario, Obra, Función, Postulación, Reserva, Notificación) y cómo se relacionan entre servicios solo por identificadores. Incluir un diagrama de clases Mermaid."
+    },
+    {
+      "title": "Vista de desarrollo",
+      "parent": "Modelo 4+1",
+      "purpose": "Describir la organización del repositorio (specs/, services/, frontend/, docs/), las capas internas de cada servicio (rutas, servicios de negocio, clientes HTTP, acceso a datos) y las dependencias de cada paquete. Incluir un diagrama Mermaid de componentes y paquetes."
+    },
+    {
+      "title": "Vista de procesos",
+      "parent": "Modelo 4+1",
+      "purpose": "Describir la colaboración en tiempo de ejecución con diagramas de secuencia Mermaid: consultar la cartelera, reservar entradas (reservas consulta el aforo en programación y avisa a notificaciones), aprobar una postulación y generar reportes. Explicar el manejo de errores cuando un servicio no está disponible (HTTP 503)."
+    },
+    {
+      "title": "Vista física",
+      "parent": "Modelo 4+1",
+      "purpose": "Describir el despliegue: cada microservicio como proceso Node.js independiente con su propio archivo SQLite, el API Gateway y el servidor del frontend, con sus puertos. Incluir un diagrama Mermaid de despliegue y cómo se configuran las URLs con variables de entorno."
+    },
+    {
+      "title": "Decisiones arquitectónicas",
+      "purpose": "Resumir las decisiones de docs/arquitectura/decisiones.md: microservicios en lugar de monolito, API Gateway, una base de datos por servicio, comunicación REST síncrona y SDD con contratos primero, con sus ventajas y desventajas."
+    },
+    {
+      "title": "Microservicios y contratos de API",
+      "purpose": "Documentar cada microservicio (programación, convocatoria, reservas, notificaciones) con su responsabilidad, puerto, endpoints principales según specs/*/contracts/ y qué otros servicios consume."
+    },
+    {
+      "title": "Metodología SDD y flujo de ramas",
+      "purpose": "Explicar cómo se aplicó Specification-Driven Development (spec.md, plan.md, tasks.md, contratos, constitución) y el flujo de trabajo por ramas spec-1 a spec-4 integradas a main mediante Pull Requests."
+    }
+  ]
+}
