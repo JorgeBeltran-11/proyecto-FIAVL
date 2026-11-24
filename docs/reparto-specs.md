@@ -6,7 +6,7 @@ Cada integrante es dueño de una spec, una rama y un microservicio.
 |---|---|---|---|---|
 | spec-1 — Programación del festival + base | `spec-1` | `programacion-service` + `api-gateway` | 3001 / 3000 | Jorge Beltrán |
 | spec-2 — Convocatoria de artistas | `spec-2` | `convocatoria-service` | 3002 | _(por asignar)_ |
-| spec-3 — Entradas y reservas | `spec-3` | `reservas-service` | 3003 | _(por asignar)_ |
+| spec-3 — Entradas y reservas | `spec-3` | `reservas-service` | 3003 | Julio Cesar |
 | spec-4 — Notificaciones y reportes | `spec-4` | `notificaciones-service` | 3004 | _(por asignar)_ |
 
 ## spec-1 — Programación del festival (base del proyecto)

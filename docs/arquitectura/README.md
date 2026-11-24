@@ -1,7 +1,7 @@
 # Arquitectura FIAVL — Modelo 4+1
 
 - **Estilo:** Microservicios con API Gateway
-- **Estado:** spec-1 implementada · spec-2, spec-3 y spec-4 planificadas
+- **Estado:** spec-1 y spec-3 implementadas · spec-2 y spec-4 planificadas
   (en los diagramas, las líneas punteadas son lo que falta implementar)
 
 | Vista | Pregunta que responde | Interesado principal |
@@ -137,7 +137,7 @@ flowchart TB
         subgraph specs[specs/]
             s1[spec-1-programacion]
             s2[spec-2-convocatoria]:::pend
-            s3[spec-3-reservas]:::pend
+            s3[spec-3-reservas]
             s4[spec-4-notificaciones]:::pend
         end
         subgraph fe[frontend/ React + Vite]
@@ -150,7 +150,11 @@ flowchart TB
                 rutas[routes/] --> negocio[services/] --> datos[db.js · SQLite]
             end
             conv[convocatoria-service]:::pend
-            res[reservas-service]:::pend
+            subgraph res[reservas-service]
+                direction TB
+                rutasR[routes/] --> negocioR[services/] --> datosR[db.js · SQLite]
+                negocioR --> clientesR[clients/]
+            end
             noti[notificaciones-service]:::pend
         end
         docs[docs/arquitectura]
@@ -158,9 +162,12 @@ flowchart TB
     apijs -->|HTTP /api| gw
     gw --> prog
     gw -.-> conv
-    gw -.-> res
+    gw --> res
     gw -.-> noti
+    clientesR -->|HTTP| prog
+    clientesR -.->|HTTP| noti
     s1 -. especifica .-> prog
+    s3 -. especifica .-> res
 
     classDef pend stroke-dasharray: 5 5,fill:#f5f5f5,color:#777
 ```
@@ -198,7 +205,7 @@ sequenceDiagram
     FE-->>P: Tarjetas de funciones
 ```
 
-### 4.2 Reservar entradas (spec-3 + spec-1 + spec-4)
+### 4.2 Reservar entradas (spec-3 + spec-1 + spec-4) (implementado, salvo spec-4)
 
 ```mermaid
 sequenceDiagram
@@ -208,7 +215,7 @@ sequenceDiagram
     participant PR as programacion-service :3001
     participant NO as notificaciones-service :3004
 
-    P->>GW: POST /api/reservas/reservas {funcionId, nombre, correo, cantidad}
+    P->>GW: POST /api/reservas/reservas {funcion_id, nombre, correo, cantidad}
     GW->>RE: POST /reservas
     RE->>PR: GET /funciones/:id
     alt programación no responde
@@ -279,9 +286,9 @@ flowchart LR
     vite -->|proxy /api| gw
     gw --> n1
     gw -.-> n2
-    gw -.-> n3
+    gw --> n3
     gw -.-> n4
-    n3 -.->|HTTP| n1
+    n3 -->|HTTP| n1
     n2 -.->|HTTP| n1
     n3 -.->|HTTP| n4
     n2 -.->|HTTP| n4
