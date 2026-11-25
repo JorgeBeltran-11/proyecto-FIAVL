@@ -4,8 +4,8 @@
   "private": true,
   "description": "Plataforma de microservicios para el Festival Internacional de Artes Vivas Loja",
   "scripts": {
-    "instalar": "npm install && npm install --prefix services/api-gateway && npm install --prefix services/programacion-service && npm install --prefix services/reservas-service && npm install --prefix frontend",
-    "dev": "concurrently -n gateway,programacion,reservas,frontend -c blue,magenta,yellow,green \"npm start --prefix services/api-gateway\" \"npm start --prefix services/programacion-service\" \"npm start --prefix services/reservas-service\" \"npm run dev --prefix frontend\""
+    "instalar": "npm install && npm install --prefix services/api-gateway && npm install --prefix services/programacion-service && npm install --prefix services/convocatoria-service && npm install --prefix services/reservas-service && npm install --prefix frontend",
+    "dev": "concurrently -n gateway,programacion,convocatoria,reservas,frontend -c blue,magenta,cyan,yellow,green \"npm start --prefix services/api-gateway\" \"npm start --prefix services/programacion-service\" \"npm start --prefix services/convocatoria-service\" \"npm start --prefix services/reservas-service\" \"npm run dev --prefix frontend\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

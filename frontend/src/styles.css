@@ -60,3 +60,20 @@ select, input {
 .error { color: #b00020; }
 .exito { color: #1b7a3a; }
 .vacio { color: var(--suave); font-style: italic; }
+
+/* spec-2: convocatoria */
+textarea {
+  font: inherit; color: var(--tinta); padding: 0.45rem 0.6rem; border: 1px solid var(--borde);
+  border-radius: 6px; background: #fff; resize: vertical;
+}
+.etiqueta.estado-pendiente { background: #fff1cf; }
+.etiqueta.estado-aprobada { background: #e1f5e6; }
+.etiqueta.estado-rechazada { background: #fde2e2; }
+.lista-postulaciones { display: flex; flex-direction: column; gap: 0.5rem; }
+.tarjeta.fila {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem;
+  text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.tarjeta.fila.elegida { border-color: var(--acento); box-shadow: 0 0 0 1px var(--acento); }
+.panel button.secundario { background: #fff; color: var(--acento); border: 1px solid var(--acento); }
+.panel button:disabled { opacity: 0.5; cursor: not-allowed; }

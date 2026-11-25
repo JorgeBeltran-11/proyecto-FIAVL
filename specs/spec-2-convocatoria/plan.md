@@ -86,7 +86,7 @@ sequenceDiagram
 
 - Publicado por esta spec: [contracts/convocatoria-api.md](contracts/convocatoria-api.md)
 - Consumidos: `POST /obras` de spec-1 y `POST /notificaciones` de spec-4
-  (formato provisional, ver contrato; se ajusta cuando spec-4 publique el suyo).
+  (formato confirmado con el contrato de spec-4).
 
 ## 6. Frontend
 

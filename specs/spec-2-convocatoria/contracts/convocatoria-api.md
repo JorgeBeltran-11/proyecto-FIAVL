@@ -65,7 +65,7 @@ Entre servicios se llama directo: `http://localhost:3002/...`
 | programacion-service (spec-1) | `POST /obras` con `titulo, compania, pais, disciplina, duracion_min, sinopsis` | Al aprobar |
 | notificaciones-service (spec-4) | `POST /notificaciones` | Al aprobar o rechazar |
 
-Formato **provisional** del aviso a spec-4 (por acordar con su responsable):
+Formato del aviso a spec-4 (aceptado por `specs/spec-4-notificaciones-reportes/contracts/notificaciones-api.yaml`):
 
 ```json
 { "tipo": "postulacion", "correo": "ana@colectivoandino.pe",

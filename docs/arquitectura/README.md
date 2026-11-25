@@ -1,7 +1,7 @@
 # Arquitectura FIAVL — Modelo 4+1
 
 - **Estilo:** Microservicios con API Gateway
-- **Estado:** spec-1 y spec-3 implementadas · spec-2 y spec-4 planificadas
+- **Estado:** spec-1, spec-2 y spec-3 implementadas · spec-4 planificada
   (en los diagramas, las líneas punteadas son lo que falta implementar)
 
 | Vista | Pregunta que responde | Interesado principal |
@@ -136,7 +136,7 @@ flowchart TB
         direction TB
         subgraph specs[specs/]
             s1[spec-1-programacion]
-            s2[spec-2-convocatoria]:::pend
+            s2[spec-2-convocatoria]
             s3[spec-3-reservas]
             s4[spec-4-notificaciones]:::pend
         end
@@ -149,7 +149,7 @@ flowchart TB
                 direction TB
                 rutas[routes/] --> negocio[services/] --> datos[db.js · SQLite]
             end
-            conv[convocatoria-service]:::pend
+            conv[convocatoria-service]
             subgraph res[reservas-service]
                 direction TB
                 rutasR[routes/] --> negocioR[services/] --> datosR[db.js · SQLite]
@@ -161,7 +161,7 @@ flowchart TB
     end
     apijs -->|HTTP /api| gw
     gw --> prog
-    gw -.-> conv
+    gw --> conv
     gw --> res
     gw -.-> noti
     clientesR -->|HTTP| prog
@@ -247,11 +247,20 @@ sequenceDiagram
 
     A->>GW: POST /api/convocatoria/postulaciones/:id/aprobar
     GW->>CO: POST /postulaciones/:id/aprobar
+    CO->>CO: ¿existe y está pendiente? (si no: 404 / 409)
     CO->>PR: POST /obras {titulo, compania, ...}
-    PR-->>CO: 201 {id}
-    CO->>CO: estado = aprobada, obraId = id
-    CO-)NO: POST /notificaciones {correo, tipo: postulacion}
-    CO-->>GW: 200 postulación aprobada
+    alt programación crea la obra
+        PR-->>CO: 201 {id}
+        CO->>CO: estado = aprobada, obraId = id
+        CO-)NO: POST /notificaciones {correo, tipo: postulacion}
+        Note over CO,NO: si notificaciones falla, la aprobación igual queda
+        CO-->>GW: 200 postulación aprobada
+    else programación no responde
+        CO-->>GW: 503, la postulación sigue pendiente
+    else programación rechaza los datos
+        PR-->>CO: 400 {error}
+        CO-->>GW: 502, la postulación sigue pendiente
+    end
 ```
 
 ---
@@ -285,13 +294,13 @@ flowchart LR
     nav -->|HTTP| vite
     vite -->|proxy /api| gw
     gw --> n1
-    gw -.-> n2
+    gw --> n2
     gw --> n3
     gw -.-> n4
     n3 -->|HTTP| n1
-    n2 -.->|HTTP| n1
+    n2 -->|HTTP| n1
     n3 -.->|HTTP| n4
-    n2 -.->|HTTP| n4
+    n2 -->|HTTP| n4
 ```
 
 En producción, cada nodo podría ser un contenedor distinto; como solo se

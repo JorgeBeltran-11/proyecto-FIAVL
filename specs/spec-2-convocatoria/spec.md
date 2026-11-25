@@ -2,7 +2,7 @@
 
 - **Rama:** `spec-2`
 - **Responsable:** David León
-- **Estado:** Borrador
+- **Estado:** Aprobada
 - **Microservicio:** `convocatoria-service`
 
 ## 1. Contexto
